@@ -1,13 +1,37 @@
 # Owner(s): ["oncall: quantization"]
 
-from torch.ao.quantization.experimental.quantizer import APoTQuantizer
+import torch
+import random
 import unittest
+from torch.ao.quantization.experimental.quantizer import APoTQuantizer
+from torch.ao.quantization.experimental.APoT_tensor import TensorAPoT
+from torch.ao.quantization.experimental.apot_utils import apot_to_float
 
 class TestQuantizedTensor(unittest.TestCase):
+    r""" Tests int_repr on APoTQuantizer with random tensor2quantize
+    and hard-coded values b=4, k=2
+    """
     def test_int_repr(self):
-        quantizer = APoTQuantizer()
-        with self.assertRaises(NotImplementedError):
-            quantizer.int_repr()
+        # generate random size of tensor2dequantize between 1 -> 20
+        size = random.randint(1, 20)
+
+        # generate tensor with random fp values between 0 -> 1000
+        tensor2quantize = 1000 * torch.rand(size, dtype=torch.float)
+
+        quantizer = APoTQuantizer(4, 2, torch.max(tensor2quantize), False)
+
+        tensor_apot = TensorAPoT(quantizer)
+
+        # # get apot quantized tensor result
+        # qtensor = quantizer.quantize_APoT(tensor2quantize=tensor2quantize)
+
+        # print(quantizer)
+
+        # tensor_apot = TensorAPoT(quantizer)
+
+        # qtensor_int_rep = tensor_apot.int_repr()
+
+        # self.assertTrue(torch.equal(qtensor, qtensor_int_rep))
 
 if __name__ == '__main__':
     unittest.main()
